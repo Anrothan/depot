@@ -31,6 +31,8 @@ gem 'guard-test'
 gem 'guard-rails'
 gem 'guard-bundler'
 
+gem 'haml'
+
 group :production do
 	gem 'pg'
 	gem 'rails_12factor'
