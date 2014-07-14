@@ -32,6 +32,7 @@ gem 'guard-rails'
 gem 'guard-bundler'
 
 gem 'haml'
+gem 'haml-rails'
 
 group :production do
 	gem 'pg'
