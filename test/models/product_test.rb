@@ -5,7 +5,7 @@ class ProductTest < ActiveSupport::TestCase
 
 	def new_product(image_url)
 		Product.new(title:             "My Book Title",
-					description:       "yyy",
+					description:       "y"*15,
 					price:             1,
 					image_url:         image_url) 
 	end
@@ -21,7 +21,7 @@ class ProductTest < ActiveSupport::TestCase
 
 	test "product price must be positive" do
 		product = Product.new(title: "My Book Title",
-		 						description: "yyy",
+		 						description: "valid_description",
 		 						image_url: "zzz.jpg")
 		invalid_prices = [0, -1, 0.001]
 		invalid_prices.each do |price|
@@ -49,10 +49,20 @@ class ProductTest < ActiveSupport::TestCase
 
 	test "product is not valid without a unique title" do
 		product = Product.new(title:        products(:ruby).title,
-							  description:  "yyy",
+							  description:  "valid_description",
 							  price:        1,
 							  image_url:    "fred.gif")
 		assert product.invalid?
 		assert_equal [I18n.translate('errors.messages.taken')], product.errors[:title]
+	end
+
+	test "titles less than 10 characters not permitted" do
+		product = Product.new(title:        "too_short",
+							  description:  "valid_description",
+							  price:        1,
+							  image_url:    "fred.gif")
+
+		assert product.invalid?
+		assert_equal ["must be at least 10 characters"], product.errors[:title]
 	end
 end
