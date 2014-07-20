@@ -5,7 +5,10 @@ Rails.application.routes.draw do
 
   resources :carts
 
-  resources :products
+  get "store/index"
+  resources :products do
+    get :who_bought, on: :member
+  end
 
   root 'store#index', as: 'store'
 
