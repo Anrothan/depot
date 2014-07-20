@@ -68,6 +68,7 @@ class ProductsController < ApplicationController
       respond_to do |format|
         format.atom
       end
+    end
   end
 
   private
