@@ -1,5 +1,10 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
+  # Unresolved behavior in Rails causes only: and if: modifiers to mix inappropriately for skip_before_action.
+  # This has been solved in the meantime by opening the entire users controller with
+  # access removed immediately after the first admin is created. Since all other actions
+  # are useless until an admin is made, this is not seen as a major security risk.
+  skip_before_action :authorize, if: :no_admins?
 
   # GET /users
   # GET /users.json
@@ -40,8 +45,10 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/1
   # PATCH/PUT /users/1.json
   def update
+    current_password = params[:user].delete('current_password')
+    @user.errors.add(:current_password, 'is not correct') unless @user.authenticate(current_password)
     respond_to do |format|
-      if @user.update(user_params)
+      if @user.errors.empty? && @user.update(user_params)
         format.html { redirect_to users_url, notice: "User #{@user.name} was successfully updated." }
         format.json { render :show, status: :ok, location: @user }
       else
@@ -54,9 +61,14 @@ class UsersController < ApplicationController
   # DELETE /users/1
   # DELETE /users/1.json
   def destroy
-    @user.destroy
+    begin
+      @user.destroy
+      flash[:notice] = "User #{@user.name} deleted"
+    rescue StandardError => e
+      flash[:notice] = e.message
+    end
     respond_to do |format|
-      format.html { redirect_to users_url, notice: 'User was successfully destroyed.' }
+      format.html { redirect_to users_url }
       format.json { head :no_content }
     end
   end
@@ -70,5 +82,9 @@ class UsersController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def user_params
       params.require(:user).permit(:name, :password, :password_confirmation)
+    end
+
+    def no_admins?
+      User.count.zero?
     end
 end
