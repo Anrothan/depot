@@ -9,7 +9,7 @@
 %body{ class: "#{controller.controller_name}" }
   #banner
     = image_tag("logo.png")
-    = @page_title || "Pragmatic Bookshelf"
+    = @page_title || t('.title')
 
   #columns
     #side
@@ -17,10 +17,10 @@
         = hidden_div_if(@cart.line_items.empty?, id: 'cart') do
           = render @cart
       %ul
-        %li= link_to "Home", "http://www...."
-        %li= link_to "Questions", "http://www..../faq"
-        %li= link_to "News", "http://www..../news"
-        %li= link_to "Contact", "http://www..../contact"
+        %li= link_to t('.home'), "http://www...."
+        %li= link_to t('.questions'), "http://www..../faq"
+        %li= link_to t('.news'), "http://www..../news"
+        %li= link_to t('.contact'), "http://www..../contact"
 
       - if session[:user_id]
         %ul
